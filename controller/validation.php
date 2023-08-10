@@ -1,5 +1,5 @@
 <?php
-    include "./model/connect.php";
+    include  "../model/connect.php";
     
     $error = false;
 
@@ -7,19 +7,24 @@
         session_start();
     }
 
-
+   
     if(isset($_POST['original_url'])) {
         $original_url = $_POST['original_url'];
         $validation = validation($original_url);
+
+        unset($_SESSION['error']);
 
         if ($validation) {
             $shorten_url = shorten_url($domain);
             $get_last_id = insert($conn, $original_url, $shorten_url);
             $short_url = get_shorten_url($conn, $get_last_id);
-            header("Location: ./view/shorten_url.php");
+
+            $_SESSION['shorten_url'] = $short_url;
+            $_SESSION['original_url'] = $original_url;
+            header("Location: ../view/shorten_url.php");
         } else {
-            $error_message = "Please provide proper url link";
-            $error = true; 
+            $_SESSION['error'] = "Please provide proper url link";
+            header("Location: ../index.php");
         }
     }
     
